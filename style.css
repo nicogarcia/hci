@@ -1,0 +1,136 @@
+@CHARSET "UTF-8";
+
+html {
+	height: 100%
+}
+
+body {
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+#container {
+	min-height: 100%;
+}
+
+#header {
+	height: 40px;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb),
+		to(#fafafa) );
+	-moz-box-shadow: 0 1px 2px #d1d1d1;
+	-webkit-box-shadow: 0 2px 2px #d1d1d1;
+	-webkit-border-radius: 4px;
+}
+
+#botonera {
+	width: 500px;
+	height: 100%;
+	margin: 0 auto;
+}
+
+#logo {
+	float: left;
+	color: #fff;
+	background-color: #000;
+	font: 20px Tahoma, Helvetica, Arial, Sans-Serif;
+	text-align: center;
+	text-shadow: 0px 2px 3px #555;
+	margin: 2px;
+	padding: 5px;
+	-moz-box-shadow: 0 1px 2px #d1d1d1;
+	-webkit-box-shadow: 0 1px 2px #d1d1d1;
+	-webkit-border-radius: 4px;
+}
+
+#map_canvas {
+	height: auto;
+	width: 100%;
+	bottom: 0;
+	top: 43px;
+	position: absolute;
+}
+
+#info {
+	left: 0;
+	height: 100%
+}
+
+#info_header {
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #333;
+	font-size: 18px;
+	text-shadow: 1px 1px 0px #fff;
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 5px;
+}
+
+#info_content {
+	
+}
+
+#infobox {
+	border: 2px solid black;
+	margin-top: 8px;
+	background: #333;
+	color: #FFF;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	padding: .5em 1em;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	text-shadow: 0 -1px #000000;
+	-webkit-box-shadow: 0 0 8px #000;
+	box-shadow: 0 0 8px #000;
+}
+
+#toggleBtn {
+	float: left;
+	padding: 5px;
+	height: 100%;
+	width: 20px;
+	background: url(arrow-left.png) no-repeat center center;
+	-moz-box-shadow: -3px 1px 2px #d1d1d1;
+	-webkit-box-shadow: -3px 1px 2px #d1d1d1;
+}
+
+#sliderbox {
+	height: 100%;
+	margin-right: -470px;
+	width: 500px;
+	-webkit-box-shadow: 0 1px 2px #d1d1d1;
+	-webkit-border-radius: 4px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb),
+		to(#fafafa) );
+}
+
+
+/************/
+
+      #panel {
+        width: 300px;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        float: left;
+        margin: 10px;
+        z-index:-1000;
+      }
+
+      #color-palette {
+        clear: both;
+      }
+
+      .color-button {
+        width: 14px;
+        height: 14px;
+        font-size: 0;
+        margin: 2px;
+        float: left;
+        cursor: pointer;
+      }
+​
