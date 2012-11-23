@@ -132,7 +132,7 @@ function SliderBox(controlDiv, map) {
 function fillTable(barrio) {
 	var table = document.getElementById('data_table');
 	var col = 0;
-	for ( var row = 0; row < barrio.data.length; row++) {
+	for ( var row = 0; row < row_names.length; row++) {
 		table.rows[row + 1].cells[col + 1].innerHTML = Math
 				.floor(Math.random() * 50 + 20);
 		table.rows[row + 1].cells[col + 2].innerHTML = '';
