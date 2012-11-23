@@ -7,7 +7,7 @@ function Barrio() {
 	this.name = "";
 	this.polygon = "";
 };
-
+// change to see git in action
 
 // Funcion inicial
 function init() {
