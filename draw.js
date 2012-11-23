@@ -2,7 +2,10 @@ var drawingManager;
 var selectedShape;
 var colors = [ '#1E90FF', '#FF1493', '#32CD32', '#FF8C00', '#4B0082' ];
 var selectedColor;
+var nextColor = 1;
 var colorButtons = {};
+
+var zones = [];
 
 function clearSelection() {
 	if (selectedShape) {
@@ -14,13 +17,14 @@ function clearSelection() {
 function setSelection(shape) {
 	clearSelection();
 	selectedShape = shape;
+	selectedShape.setEditable(true);
 	selectColor(shape.get('fillColor') || shape.get('strokeColor'));
-	fillTable(new Barrio());
 }
 
 function deleteSelectedShape() {
 	if (selectedShape) {
 		selectedShape.setMap(null);
+		infowindow.close();
 	}
 }
 
@@ -62,7 +66,14 @@ function makeColorButton(color) {
 }
 
 function buildColorPalette() {
-	var colorPalette = document.getElementById('color-palette');
+	var panel = document.createElement('div');
+	panel.id = 'panel';
+
+	var colorPalette = document.createElement('div');
+	colorPalette.id = 'color-palette';
+
+	panel.appendChild(colorPalette);
+
 	for ( var i = 0; i < colors.length; ++i) {
 		var currColor = colors[i];
 		var colorButton = makeColorButton(currColor);
@@ -70,7 +81,61 @@ function buildColorPalette() {
 		colorButtons[currColor] = colorButton;
 	}
 	selectColor(colors[0]);
+
+	return panel;
 }
+
+function build_delete_button() {
+	var button = document.createElement('button');
+	button.id = 'delete_zone';
+	button.style.float = 'center';
+	button.innerHTML = "<span class='label'>Eliminar zona</span>";
+	button.onclick = deleteSelectedShape;
+	return button;
+}
+
+var overlayCompleteClosure = function(e) {
+	if (e.type != google.maps.drawing.OverlayType.MARKER) {
+		// Switch back to non-drawing mode after drawing a
+		// shape.
+		drawingManager.setDrawingMode(null);
+
+		// Crear pseudo-barrio a partir de lo seleccionado
+		var b = new Barrio();
+		b.name = 'Zona ' + (zones.length + 1);
+		b.polygon = e.overlay;
+		b.polygon.set('barrio', b);
+
+		// Add click event listener for the new polygon
+		google.maps.event.addListener(b.polygon, 'click', function(event) {
+			var barrio = this.get('barrio');
+			var container = document.createElement('div');
+
+			var titulo = document.createElement('h1');
+			titulo.innerHTML = b.name;
+
+			var button = build_delete_button();
+
+			container.style.textAlign = 'center';
+			container.appendChild(titulo);
+			container.appendChild(button);
+
+			infowindow.setContent(container);
+			infowindow.setPosition(event.latLng);
+			infowindow.open(map);
+
+			// Fill table
+			fillTable(barrio);
+
+			setSelection(b.polygon);
+
+		});
+
+		zones.push(b);
+		setSelection(b.polygon);
+		selectColor(colors[nextColor++ % colors.length]);
+	}
+};
 
 function init_drawing() {
 	var polyOptions = {
@@ -78,45 +143,23 @@ function init_drawing() {
 		fillOpacity : 0.45,
 		editable : true
 	};
-	// Creates a drawing manager attached to the map that allows 
+	// Creates a drawing manager attached to the map that allows
 	// the user to draw markers, lines, and shapes.
 	drawingManager = new google.maps.drawing.DrawingManager({
-		drawingControl : true,
-		drawingControlOptions : {
-			position : google.maps.ControlPosition.TOP_CENTER,
-			drawingModes : [google.maps.drawing.OverlayType.POLYGON]
-		},
+		drawingControl : false,
 		polygonOptions : polyOptions,
 		map : map
 	});
 
 	google.maps.event.addListener(drawingManager, 'overlaycomplete',
-			function(e) {
-				if (e.type != google.maps.drawing.OverlayType.MARKER) {
-					// Switch back to non-drawing mode after drawing a shape.
-					drawingManager.setDrawingMode(null);
-
-					// Add an event listener that selects the newly-drawn shape
-					// when the user mouses down on it.
-					var newShape = e.overlay;
-					newShape.type = e.type;
-					google.maps.event.addListener(newShape, 'click',
-							function() {
-								setSelection(newShape);
-							});
-					setSelection(newShape);
-				}
-			});
+			overlayCompleteClosure);
 
 	// Clear the current selection when the drawing mode is changed, or when the
 	// map is clicked.
 	google.maps.event.addListener(drawingManager, 'drawingmode_changed',
 			clearSelection);
 	google.maps.event.addListener(map, 'click', clearSelection);
-//	google.maps.event.addDomListener(document.getElementById('delete-button'),
-//			'click', deleteSelectedShape);
 
-	buildColorPalette();
-	var colpal = document.getElementById('panel');
-	map.controls[google.maps.ControlPosition.TOP_CENTER].push(colpal);
+	var panel = buildColorPalette();
+	map.controls[google.maps.ControlPosition.TOP_CENTER].push(panel);
 }

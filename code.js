@@ -2,6 +2,7 @@ var map;
 var sliderBox;
 var infowindow;
 var barrios = [];
+var colores = [ "#811BE0", "#E01E1B", "#7AE01B", "#1BDDE0" ];
 
 function Barrio() {
 	this.name = "";
@@ -15,9 +16,19 @@ function init() {
 	build_table();
 	init_map();
 	init_drawing();
+	$(function(){
+		$( "#tags" ).autocomplete({
+            source: names,
+            autoFocus: true,
+            select: function(event, ui){
+            	var pos = names.indexOf(ui.item.label);
+            	selectPolygon(barrios[pos].polygon);
+            }
+        });
+	});
 }
 
-function build_table(){
+function build_table() {
 	var table = document.getElementById('data_table');
 	for ( var row = 0; row < row_names.length; row++) {
 		table.rows[row + 1].cells[0].innerHTML = row_names[row];
@@ -32,16 +43,26 @@ function init_barrios() {
 
 		var polyOptions = {
 			path : myCoordinates[i],
-			strokeColor : "#0000FF",
-			strokeOpacity : 0.8,
-			strokeWeight : 1,
-			fillColor : "#0000AA",
-			fillOpacity : 0.6
+			strokeWeight : 0,
+			fillColor : colores[i % colores.length],
+			fillOpacity : 0.5
 		};
 
 		b.polygon = new google.maps.Polygon(polyOptions);
 		barrios.push(b);
 	}
+}
+
+function selectPolygon(polygon) {
+	var barrio = polygon.get('barrio');
+	infowindow.setContent('<center><h1>' + barrio.name
+			+ '</h1></center>');
+	infowindow.setPosition(polygon.getPath().getAt(0));
+	infowindow.open(map);
+	map.panTo(infowindow.getPosition());
+
+	// Fill table
+	fillTable(barrio);
 }
 
 // Inicializar mapa
@@ -50,7 +71,7 @@ function init_map() {
 	/** Initialize map things */
 	var latlng = new google.maps.LatLng(-38.712615, -62.265717);
 	var myOptions = {
-		zoom : 12,
+		zoom : 13,
 		center : latlng,
 		mapTypeId : google.maps.MapTypeId.ROADMAP,
 		disableDefaultUI : true,
@@ -75,19 +96,23 @@ function init_map() {
 		b.polygon.set('barrio', b);
 
 		// Add click event listener for each polygon
-		google.maps.event.addListener(b.polygon, 'click', function(event, b) {
-			var barrio = this.get('barrio');
-			infowindow.setContent('<center><h1>' + barrio.name
-					+ '</h1></center>');
-			infowindow.setPosition(event.latLng);
-			infowindow.open(map);
-
-			// Fill table
-			fillTable(barrio);
+		google.maps.event.addListener(b.polygon, 'click', function(){
+			selectPolygon(this);
 		});
 
 	}
-
+	// botones superiores
+	var button = document.getElementById('customSel');
+	button.onclick = function(){
+		drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+	};
+	var saveButton = document.getElementById('saveButton');
+	saveButton.onclick = function(){
+		saveButton.children[0].innerHTML = 'Guardando...';
+		setTimeout(function(){
+			saveButton.children[0].innerHTML = 'Guardar';
+		}, 3000);
+	};
 }
 
 // Crear panel deslizante derecho
@@ -131,6 +156,8 @@ function SliderBox(controlDiv, map) {
 // Llenar la tabla y abrir panel
 function fillTable(barrio) {
 	var table = document.getElementById('data_table');
+	
+	table.rows[0].cells[1].innerHTML = barrio.name;
 	var col = 0;
 	for ( var row = 0; row < row_names.length; row++) {
 		table.rows[row + 1].cells[col + 1].innerHTML = Math
