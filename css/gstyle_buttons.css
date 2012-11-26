@@ -43,7 +43,7 @@ button {
  -moz-transition: border-color .20s;
  -o-transition: border-color .20s;
  transition: border-color .20s;
-	height: 29px !important;
+	height: 29px;
 	cursor: pointer;
 }
 button:hover {

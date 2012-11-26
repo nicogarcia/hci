@@ -1,12 +1,15 @@
 var map;
 var sliderBox;
-var infowindow;
+var infowindow1;
+var infowindow2;
+var tooltipwindow;
 var barrios = [];
-var colores = [ "#811BE0", "#E01E1B", "#7AE01B", "#1BDDE0" ];
+var comparing = false;
 
 function Barrio() {
 	this.name = "";
 	this.polygon = "";
+	this.manual = false;
 };
 // change to see git in action
 
@@ -23,16 +26,25 @@ function init() {
 			autoFocus : true,
 			select : function(event, ui) {
 				var pos = names.indexOf(ui.item.label);
-				selectPolygon(barrios[pos].polygon);
-			}
+				setSelection(barrios[pos]);
+			},
+			focus : function(event, ui) {
+			},
+			minLength : 0
 		});
+	});
+	$("#tags").click(function() {
+		$("#tags").autocomplete('search', '');
 	});
 }
 
 function build_table() {
 	var table = document.getElementById('data_table');
 	for ( var row = 0; row < row_names.length; row++) {
-		table.rows[row + 1].cells[0].innerHTML = row_names[row];
+		table.rows[row + 1].cells[0].innerHTML = "<img src='img/"
+				+ row_names[row][2] + "'height='24' style='margin-right:4px;'/>"
+				+ row_names[row][0];
+
 	}
 }
 
@@ -45,7 +57,7 @@ function init_barrios() {
 		var polyOptions = {
 			path : myCoordinates[i],
 			strokeWeight : 0,
-			fillColor : colores[i % colores.length],
+			fillColor : colors[i % colors.length],
 			fillOpacity : 0.5
 		};
 
@@ -54,24 +66,13 @@ function init_barrios() {
 	}
 }
 
-function selectPolygon(polygon) {
-	var barrio = polygon.get('barrio');
-	infowindow.setContent('<center><h1>' + barrio.name + '</h1></center>');
-	infowindow.setPosition(polygon.getPath().getAt(0));
-	infowindow.open(map);
-	map.panTo(infowindow.getPosition());
-
-	// Fill table
-	fillTable(barrio);
-}
-
 // Inicializar mapa
 function init_map() {
 
 	/** Initialize map things */
 	var latlng = new google.maps.LatLng(-38.712615, -62.265717);
 	var myOptions = {
-		zoom : 13,
+		zoom : 14,
 		center : latlng,
 		mapTypeId : google.maps.MapTypeId.ROADMAP,
 		disableDefaultUI : true,
@@ -79,7 +80,8 @@ function init_map() {
 	};
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 
-	infowindow = new google.maps.InfoWindow();
+	infowindow1 = new google.maps.InfoWindow();
+	infowindow2 = new google.maps.InfoWindow();
 
 	var sliderBoxDiv = document.createElement('div');
 	sliderBox = new SliderBox(sliderBoxDiv, map);
@@ -97,15 +99,17 @@ function init_map() {
 
 		// Add click event listener for each polygon
 		google.maps.event.addListener(b.polygon, 'click', function() {
-			selectPolygon(this);
-		});
+			setSelection(this.get('barrio'));
+		});/*
+		google.maps.event.addListener(b.polygon, 'mouseover', function(event) {
+			var barrio = this.get('barrio');
+			build_infowin_content(barrio, tooltipwindow);
+		});*/
+
+		new Tooltip(b);
 
 	}
 	// botones superiores
-	var button = document.getElementById('customSel');
-	button.onclick = function() {
-		drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
-	};
 	var saveButton = document.getElementById('saveButton');
 	saveButton.onclick = function() {
 		saveButton.children[0].innerHTML = 'Guardando...';
@@ -113,6 +117,15 @@ function init_map() {
 			saveButton.children[0].innerHTML = 'Guardar';
 		}, 3000);
 	};
+	var compareButton = document.getElementById('compareButton');
+	$(compareButton).click(function() {
+		var que = 'una';
+		if (selectedShape1) {
+			que = 'otra';
+		}
+		compareButton.children[0].innerHTML = 'Elija ' + que + ' zona...';
+		comparing = true;
+	});
 }
 
 // Crear panel deslizante derecho
@@ -122,7 +135,7 @@ function SliderBox(controlDiv, map) {
 	control.isOpen = false;
 
 	// set panel height to 100%
-	controlDiv.style.height = '100%';
+	// controlDiv.style.height = '100%';
 
 	// Put sliderbox (panel) inside the map
 	var box = document.getElementById('sliderbox');
@@ -139,9 +152,9 @@ function SliderBox(controlDiv, map) {
 			arrow = "right";
 		}
 		$("#sliderbox").animate({
-			"marginRight" : signo + '350px'
+			"marginRight" : signo + '370px'
 		}, {
-			duration : 500,
+			duration : 250,
 			step : function() {
 				google.maps.event.trigger(map, 'resize');
 			}
@@ -154,16 +167,32 @@ function SliderBox(controlDiv, map) {
 }
 
 // Llenar la tabla y abrir panel
-function fillTable(barrio) {
+function refreshTable() {
 	var table = document.getElementById('data_table');
-
-	table.rows[0].cells[1].innerHTML = barrio.name;
-	var col = 0;
-	for ( var row = 0; row < row_names.length; row++) {
-		table.rows[row + 1].cells[col + 1].innerHTML = Math
-				.floor(Math.random() * 50 + 20);
-		table.rows[row + 1].cells[col + 2].innerHTML = '';
+	var array = [ '' ];
+	array.push(selectedShape1);
+	array.push(selectedShape2);
+	for ( var col = 1; col < array.length; col++) {
+		var currentShape = array[col];
+		if (currentShape) {
+			setColumnVisible(table, col, true);
+			table.rows[0].cells[col].innerHTML = currentShape.name;
+			for ( var row = 0; row < row_names.length; row++) {
+				table.rows[row + 1].cells[col].innerHTML = Math.floor(Math
+						.random() * 50 + 20)
+						+ ' ' + row_names[row][1];
+			}
+		} else {
+			setColumnVisible(table, col, false);
+		}
 	}
-	if (!sliderBox.isOpen)
+	if (!sliderBox.isOpen && selectedShape1)
 		$('#toggleBtn').trigger('click');
+}
+
+function setColumnVisible(table, col, visible) {
+	var disp = visible ? '' : 'none';
+	for ( var row = 0; row < table.rows.length; row++) {
+		table.rows[row].cells[col].style.display = disp;
+	}
 }

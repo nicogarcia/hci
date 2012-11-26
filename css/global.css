@@ -8,6 +8,7 @@ body {
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
+	font: bold 11px Helvetica, Arial, sans-serif;
 }
 
 h1 {
@@ -34,23 +35,18 @@ h1 {
 }
 
 #botonera {
-	width: 500px;
+	width: 420px;
 	height: 100%;
 	margin: 0 auto;
 }
 
 #logo {
 	float: left;
-	color: #fff;
-	background-color: #000;
 	font: 20px Tahoma, Helvetica;
 	text-align: center;
-	text-shadow: 0px 2px 3px #555;
-	margin: 2px;
+	text-shadow: 0px 1px 1px #555;
 	padding: 5px;
-	-moz-box-shadow: 0 1px 2px #d1d1d1;
-	-webkit-box-shadow: 0 1px 2px #d1d1d1;
-	-webkit-border-radius: 4px;
+	margin: 2px;
 }
 
 #map_canvas {
@@ -70,13 +66,15 @@ h1 {
 	text-align: center;
 	color: #666;
 	font-size: 20px;
-	text-shadow: 1px 1px 0px #fff;
+	text-shadow: 1px 1px 8px #fff;
 	font-family: Arial, Helvetica, sans-serif;
 	padding: 5px;
 }
 
 #info_content {
 	text-align: center;
+	padding-left: 40px;
+	padding-right: 10px;
 }
 
 #infobox {
@@ -96,28 +94,53 @@ h1 {
 }
 
 #toggleBtn {
+	position: absolute;
+	bottom: 0;
+	top: 0;
 	float: left;
 	padding: 5px;
-	height: 100%;
 	width: 20px;
 	background: url(../img/arrow-left.png) no-repeat center center;
-	-moz-box-shadow: 2px 1px 2px #d1d1d1;
-	-webkit-box-shadow: 2px 1px 2px #d1d1d1;
 }
 
 #sliderbox {
-	height: 100%;
-	margin-right: -350px;
-	width: 380px;
+	margin-right: -370px;
+	width: 400px;
 	-webkit-box-shadow: 0 1px 2px #d1d1d1;
 	-webkit-border-radius: 4px;
 	background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb),
 		to(#fafafa) );
 }
 
+/***************/
+button.poly span.label,button.click span.label {
+	margin: 10px;
+	font-size: 14px;
+}
+
+button.poly {
+	height: auto;
+	margin-left: 0;
+	-moz-border-radius: 0 10px 10px 0;
+	border-radius: 0 10px 10px 0;
+	-webkit-border-radius: 0 10px 10px 0;
+}
+
+button.poly.active,button.click.active {
+	background: #F3F3F3;
+	box-shadow: inset 0 5px 5px #888;
+}
+
+button.click {
+	height: auto;
+	margin-right: 0;
+	-webkit-border-radius: 10px 0 0 10px;
+	-moz-border-radius: 10px 0 0 10px;
+	border-radius: 10px 0 0 10px;
+}
+
 /************/
 #panel {
-	width: 300px;
 	font-family: Arial, sans-serif;
 	font-size: 13px;
 	float: left;
@@ -136,5 +159,14 @@ h1 {
 	margin: 2px;
 	float: left;
 	cursor: pointer;
+}
+/**********/
+.tooltip{
+	font-size: 18px;
+	background-color: white;
+	border-radius: 8px;
+	padding: 5px;
+	box-shadow: 0 0 8px #000;
+	text-shadow: 0 0 1px #000;
 }
 ​
