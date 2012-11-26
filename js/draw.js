@@ -38,7 +38,6 @@ function build_infowin_content(barrio, infwin) {
 	infwin.setContent(container);
 	infwin.setPosition(barrio.polygon.getPath().getAt(0));
 	infwin.open(map);
-	// map.panTo(infwin.getPosition());
 }
 
 function setSelection(barrio) {
@@ -162,12 +161,8 @@ var overlayCompleteClosure = function(e) {
 			var barrio = this.get('barrio');
 
 			setSelection(b);
-		});/*
-		google.maps.event.addListener(b.polygon, 'mouseover', function(event) {
-			var barrio = this.get('barrio');
-			build_infowin_content(barrio, tooltipwindow);
-		});*/
-
+		});
+		new Tooltip(b);
 		zones.push(b);
 		setSelection(b);
 		selectColor(colors[nextColor++ % colors.length]);
