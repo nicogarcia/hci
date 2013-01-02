@@ -1,7 +1,6 @@
 ## Configuracion de usuario
 ### git config --global user.name nicogarcia
 ### git config --global user.email nicoalbo90@gmail.com
-// contraseña nicoocho
 
 ## iniciar repositorio local
 ### git init
